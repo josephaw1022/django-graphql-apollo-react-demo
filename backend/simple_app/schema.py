@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from graphene_django.types import DjangoObjectType
 from graphene_django.filter.fields import DjangoFilterConnectionField
 from graphql_relay.node.node import from_global_id
-
 from . import models
 
 

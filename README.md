@@ -1,4 +1,8 @@
-# A Django + GraphQL + Apollo + React Stack Demo
+## Forked by Joseph Whiteaker
+
+- for personal use and learning
+
+#### A Django + GraphQL + Apollo + React Stack Demo
 
 This repo contains the code shown at the [Singapore Djangonauts June 2017 Meetup](https://www.meetup.com/Singapore-Djangonauts/events/240608776/)
 
@@ -94,7 +98,6 @@ cd backend
 
 We like to build our Django apps in a test-driven manner, so let's also create
 a few files to setup our testing framework:
-
 
 ```py
 # File: ./backend/backend/test_settings.py
@@ -381,7 +384,8 @@ schema = graphene.Schema(query=Queries)
 ```graphql
 {
   allMessages {
-    id, message
+    id
+    message
   }
 }
 ```
@@ -519,8 +523,8 @@ schema = graphene.Schema(query=Queries, mutation=Mutations)
 ```graphql
 mutation {
   createMessage(message: "Test") {
-    status,
-    formErrors,
+    status
+    formErrors
     message {
       id
     }
@@ -651,13 +655,13 @@ yarn add react-router-dom
 First, we need to replace the example code in `App.js` with our own code:
 
 ```jsx
-import React, { Component } from 'react'
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
-import CreateView from './views/CreateView'
-import DetailView from './views/DetailView'
-import ListView from './views/ListView'
-import LoginView from './views/LoginView'
-import LogoutView from './views/LogoutView'
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import CreateView from "./views/CreateView";
+import DetailView from "./views/DetailView";
+import ListView from "./views/ListView";
+import LoginView from "./views/LoginView";
+import LogoutView from "./views/LogoutView";
 
 class App extends Component {
   render() {
@@ -665,10 +669,18 @@ class App extends Component {
       <Router>
         <div>
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/messages/create/">Create Message</Link></li>
-            <li><Link to="/login/">Login</Link></li>
-            <li><Link to="/logout/">Logout</Link></li>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/messages/create/">Create Message</Link>
+            </li>
+            <li>
+              <Link to="/login/">Login</Link>
+            </li>
+            <li>
+              <Link to="/logout/">Logout</Link>
+            </li>
           </ul>
           <Route exact path="/" component={ListView} />
           <Route exact path="/login/" component={LoginView} />
@@ -679,11 +691,11 @@ class App extends Component {
           </Switch>
         </div>
       </Router>
-    )
+    );
   }
 }
 
-export default App
+export default App;
 ```
 
 You will notice that we imported a bunch of views that don't yet exist. Let's
@@ -705,11 +717,11 @@ name and text in the div to the corresponding file-name.
 ```jsx
 // File: ./frontend/src/views/ListView.js
 
-import React from 'react'
+import React from "react";
 
 export default class ListView extends React.Component {
   render() {
-    return <div>ListView</div>
+    return <div>ListView</div>;
   }
 }
 ```
@@ -781,40 +793,39 @@ our ListView. There are some notable steps involved, too:
 ```jsx
 // File: ./frontend/src/views/ListView.js
 
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { gql, graphql } from 'react-apollo'
+import React from "react";
+import { Link } from "react-router-dom";
+import { gql, graphql } from "react-apollo";
 
 const query = gql`
-{
-  allMessages {
-    id, message
+  {
+    allMessages {
+      id
+      message
+    }
   }
-}
-`
+`;
 
 class ListView extends React.Component {
   render() {
-    let { data } = this.props
+    let { data } = this.props;
     if (data.loading || !data.allMessages) {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     }
     return (
       <div>
-        {data.allMessages.map(item => (
+        {data.allMessages.map((item) => (
           <p key={item.id}>
-            <Link to={`/messages/${item.id}/`}>
-              {item.message}
-            </Link>
+            <Link to={`/messages/${item.id}/`}>{item.message}</Link>
           </p>
         ))}
       </div>
-    )
+    );
   }
 }
 
-ListView = graphql(query)(ListView)
-export default ListView
+ListView = graphql(query)(ListView);
+export default ListView;
 ```
 
 > At this point, you should be able to browse to `localhost:3000/` and see a list of messages. If you don't have any message in your database yet, add some at `localhost:8000/admin/`
@@ -838,22 +849,24 @@ steps are slightly different here:
 ```jsx
 // File: ./frontend/src/views/DetailView.js
 
-import React from 'react'
-import { gql, graphql } from 'react-apollo'
+import React from "react";
+import { gql, graphql } from "react-apollo";
 
 const query = gql`
-query DetailView($id: ID!) {
-  message(id: $id) {
-    id, creationDate, message
+  query DetailView($id: ID!) {
+    message(id: $id) {
+      id
+      creationDate
+      message
+    }
   }
-}
-`
+`;
 
 class DetailView extends React.Component {
   render() {
-    let { data } = this.props
+    let { data } = this.props;
     if (data.loading || !data.message) {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     }
     return (
       <div>
@@ -861,20 +874,20 @@ class DetailView extends React.Component {
         <p>{data.message.creationDate}</p>
         <p>{data.message.message}</p>
       </div>
-    )
+    );
   }
 }
 
 const queryOptions = {
-  options: props => ({
+  options: (props) => ({
     variables: {
       id: props.match.params.id,
     },
   }),
-}
+};
 
-DetailView = graphql(query, queryOptions)(DetailView)
-export default DetailView
+DetailView = graphql(query, queryOptions)(DetailView);
+export default DetailView;
 ```
 
 > At this point you should be able to browse to the list view and click at an item and see the DetailView with correct data.
@@ -1047,35 +1060,35 @@ is not logged in, let's redirect to the `/login/` view:
 ```jsx
 // File: ./frontend/src/views/CreateView.js
 
-import React from 'react'
-import { gql, graphql } from 'react-apollo'
+import React from "react";
+import { gql, graphql } from "react-apollo";
 
 const query = gql`
-{
-  currentUser {
-    id
+  {
+    currentUser {
+      id
+    }
   }
-}
-`
+`;
 
 class CreateView extends React.Component {
   componentWillUpdate(nextProps) {
     if (!nextProps.data.loading && nextProps.data.currentUser === null) {
-      window.location.replace('/login/')
+      window.location.replace("/login/");
     }
   }
 
   render() {
-    let { data } = this.props
+    let { data } = this.props;
     if (data.loading) {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     }
-    return <div>CreateView</div>
+    return <div>CreateView</div>;
   }
 }
 
-CreateView = graphql(query)(CreateView)
-export default CreateView
+CreateView = graphql(query)(CreateView);
+export default CreateView;
 ```
 
 > At this point, you should be able to click at the `Create Message` link and be redirected to the `/login/` view.
@@ -1098,27 +1111,27 @@ lets implement the LoginView. Here are some notable steps:
 ```jsx
 // File: ./frontend/src/views/LoginView.js
 
-import React from 'react'
+import React from "react";
 
 export default class LoginView extends React.Component {
   handleSubmit(e) {
-    e.preventDefault()
-    let data = new FormData(this.form)
-    fetch('http://localhost:8000/api-token-auth/', {
-      method: 'POST',
+    e.preventDefault();
+    let data = new FormData(this.form);
+    fetch("http://localhost:8000/api-token-auth/", {
+      method: "POST",
       body: data,
     })
-      .then(res => {
-        res.json().then(res => {
+      .then((res) => {
+        res.json().then((res) => {
           if (res.token) {
-            localStorage.setItem('token', res.token)
-            window.location.replace('/')
+            localStorage.setItem("token", res.token);
+            window.location.replace("/");
           }
-        })
+        });
       })
-      .catch(err => {
-        console.log('Network error')
-      })
+      .catch((err) => {
+        console.log("Network error");
+      });
   }
 
   render() {
@@ -1126,8 +1139,8 @@ export default class LoginView extends React.Component {
       <div>
         <h1>LoginView</h1>
         <form
-          ref={ref => (this.form = ref)}
-          onSubmit={e => this.handleSubmit(e)}
+          ref={(ref) => (this.form = ref)}
+          onSubmit={(e) => this.handleSubmit(e)}
         >
           <div>
             <label>Username:</label>
@@ -1140,7 +1153,7 @@ export default class LoginView extends React.Component {
           <button type="submit">Login</button>
         </form>
       </div>
-    )
+    );
   }
 }
 ```
@@ -1151,12 +1164,12 @@ When we are at it, let's also create our `LogoutView`. That one is pretty
 simple, we just remove the token from localStorage and trigger a page refresh.
 
 ```jsx
-import React from 'react'
+import React from "react";
 
 export default class LogoutView extends React.Component {
   handleClick() {
-    localStorage.removeItem('token')
-    window.location.replace('/')
+    localStorage.removeItem("token");
+    window.location.replace("/");
   }
 
   render() {
@@ -1165,7 +1178,7 @@ export default class LogoutView extends React.Component {
         <h1>Logout</h1>
         <button onClick={() => this.handleClick()}>Logout</button>
       </div>
-    )
+    );
   }
 }
 ```
@@ -1188,65 +1201,65 @@ Notable steps involved:
 ```jsx
 // File: ./frontend/src/views/CreateView.js
 
-import React from 'react'
-import { gql, graphql } from 'react-apollo'
+import React from "react";
+import { gql, graphql } from "react-apollo";
 
 // This is new:
 const mutation = gql`
-mutation CreateView($message: String!) {
-  createMessage(message: $message) {
-    status,
-    formErrors,
-    message {
+  mutation CreateView($message: String!) {
+    createMessage(message: $message) {
+      status
+      formErrors
+      message {
+        id
+      }
+    }
+  }
+`;
+
+const query = gql`
+  {
+    currentUser {
       id
     }
   }
-}
-`
-
-const query = gql`
-{
-  currentUser {
-    id
-  }
-}
-`
+`;
 
 class CreateView extends React.Component {
   componentWillUpdate(nextProps) {
     if (!nextProps.data.loading && nextProps.data.currentUser === null) {
-      window.location.replace('/login/')
+      window.location.replace("/login/");
     }
   }
 
   // This is new:
   handleSubmit(e) {
-    e.preventDefault()
-    let data = new FormData(this.form)
+    e.preventDefault();
+    let data = new FormData(this.form);
     this.props
-      .mutate({ variables: { message: data.get('message') } })
-      .then(res => {
+      .mutate({ variables: { message: data.get("message") } })
+      .then((res) => {
         if (res.status === 200) {
-          window.location.replace('/')
+          window.location.replace("/");
         }
       })
-      .catch(err => {
-        console.log('Network error')
-      })
+      .catch((err) => {
+        console.log("Network error");
+      });
   }
 
   render() {
     // This is new:
-    let { data } = this.props
+    let { data } = this.props;
     if (data.loading || data.currentUser === null) {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     }
     return (
       <div>
         <h1>Create Message</h1>
         <form
-          ref={ref => (this.form = ref)}
-          onSubmit={e => this.handleSubmit(e)}
+          ref={(ref) => (this.form = ref)}
+          onSubmit={(e) => this.handleSubmit(e)}
         >
           <div>
             <label>Message:</label>
@@ -1255,13 +1268,13 @@ class CreateView extends React.Component {
           <button type="submit">Submit Message</button>
         </form>
       </div>
-    )
+    );
   }
 }
 
-CreateView = graphql(query)(CreateView)
-CreateView = graphql(mutation)(CreateView)  // <-- This is new
-export default CreateView
+CreateView = graphql(query)(CreateView);
+CreateView = graphql(mutation)(CreateView); // <-- This is new
+export default CreateView;
 ```
 
 > At this point you should be able to submit a new message and then see it on the ListView
@@ -1380,7 +1393,8 @@ class Query(graphene.AbstractType):
   allMessages(message_Icontains: "Te") {
     edges {
       node {
-        id, message
+        id
+        message
       }
     }
   }
@@ -1407,67 +1421,66 @@ Notable steps to be taken in the ListView:
 ```jsx
 // File: ./frontend/src/views/ListView.js
 
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { gql, graphql } from 'react-apollo'
-import queryString from 'query-string'
+import React from "react";
+import { Link } from "react-router-dom";
+import { gql, graphql } from "react-apollo";
+import queryString from "query-string";
 
 const query = gql`
-query ListViewSearch($search: String) {
-  allMessages(message_Icontains: $search) {
-    edges {
-      node {
-        id, message
+  query ListViewSearch($search: String) {
+    allMessages(message_Icontains: $search) {
+      edges {
+        node {
+          id
+          message
+        }
       }
     }
   }
-}
-`
+`;
 
 class ListView extends React.Component {
   handleSearchSubmit(e) {
-    e.preventDefault()
-    let data = new FormData(this.form)
-    let query = `?search=${data.get('search')}`
-    this.props.history.push(`/${query}`)
+    e.preventDefault();
+    let data = new FormData(this.form);
+    let query = `?search=${data.get("search")}`;
+    this.props.history.push(`/${query}`);
   }
 
   render() {
-    let { data } = this.props
+    let { data } = this.props;
     if (data.loading || !data.allMessages) {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     }
     return (
       <div>
         <form
-          ref={ref => (this.form = ref)}
-          onSubmit={e => this.handleSearchSubmit(e)}
+          ref={(ref) => (this.form = ref)}
+          onSubmit={(e) => this.handleSearchSubmit(e)}
         >
           <input type="text" name="search" />
           <button type="submit">Search</button>
         </form>
-        {data.allMessages.edges.map(item => (
+        {data.allMessages.edges.map((item) => (
           <p key={item.node.id}>
-            <Link to={`/messages/${item.node.id}/`}>
-              {item.node.message}
-            </Link>
+            <Link to={`/messages/${item.node.id}/`}>{item.node.message}</Link>
           </p>
         ))}
       </div>
-    )
+    );
   }
 }
 
 const queryOptions = {
-  options: props => ({
+  options: (props) => ({
     variables: {
       search: queryString.parse(props.location.search).search,
     },
   }),
-}
+};
 
-ListView = graphql(query, queryOptions)(ListView)
-export default ListView
+ListView = graphql(query, queryOptions)(ListView);
+export default ListView;
 ```
 
 > At this point you should be able to submit searches and see filtered results
@@ -1499,39 +1512,40 @@ Our update ListView should look as follows. Notable changes:
 ```jsx
 // File: ./frontend/src/views/ListView.js
 
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { gql, graphql } from 'react-apollo'
-import queryString from 'query-string'
+import React from "react";
+import { Link } from "react-router-dom";
+import { gql, graphql } from "react-apollo";
+import queryString from "query-string";
 
 const query = gql`
-query ListViewSearch($search: String, $endCursor: String) {
-  allMessages(first: 2, message_Icontains: $search, after: $endCursor) {
-    edges {
-      node {
-        id, message
+  query ListViewSearch($search: String, $endCursor: String) {
+    allMessages(first: 2, message_Icontains: $search, after: $endCursor) {
+      edges {
+        node {
+          id
+          message
+        }
       }
-    },
-    pageInfo {
-      hasNextPage,
-      hasPreviousPage,
-      startCursor,
-      endCursor
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
     }
   }
-}
-`
+`;
 
 class ListView extends React.Component {
   handleSearchSubmit(e) {
-    e.preventDefault()
-    let data = new FormData(this.form)
-    let query = `?search=${data.get('search')}`
-    this.props.history.push(`/${query}`)
+    e.preventDefault();
+    let data = new FormData(this.form);
+    let query = `?search=${data.get("search")}`;
+    this.props.history.push(`/${query}`);
   }
 
   loadMore() {
-    let { data, location } = this.props
+    let { data, location } = this.props;
     data.fetchMore({
       query: query,
       variables: {
@@ -1539,57 +1553,56 @@ class ListView extends React.Component {
         endCursor: data.allMessages.pageInfo.endCursor,
       },
       updateQuery: (prev, next) => {
-        const newEdges = next.fetchMoreResult.allMessages.edges
-        const pageInfo = next.fetchMoreResult.allMessages.pageInfo
+        const newEdges = next.fetchMoreResult.allMessages.edges;
+        const pageInfo = next.fetchMoreResult.allMessages.pageInfo;
         return {
           allMessages: {
             edges: [...prev.allMessages.edges, ...newEdges],
             pageInfo,
           },
-        }
+        };
       },
-    })
+    });
   }
 
   render() {
-    let { data } = this.props
+    let { data } = this.props;
     if (data.loading || !data.allMessages) {
-      return <div>Loading...</div>
+      return <div>Loading...</div>;
     }
     return (
       <div>
         <form
-          ref={ref => (this.form = ref)}
-          onSubmit={e => this.handleSearchSubmit(e)}
+          ref={(ref) => (this.form = ref)}
+          onSubmit={(e) => this.handleSearchSubmit(e)}
         >
           <input type="text" name="search" />
           <button type="submit">Search</button>
         </form>
-        {data.allMessages.edges.map(item => (
+        {data.allMessages.edges.map((item) => (
           <p key={item.node.id}>
-            <Link to={`/messages/${item.node.id}/`}>
-              {item.node.message}
-            </Link>
+            <Link to={`/messages/${item.node.id}/`}>{item.node.message}</Link>
           </p>
         ))}
-        {data.allMessages.pageInfo.hasNextPage &&
-          <button onClick={() => this.loadMore()}>Load more...</button>}
+        {data.allMessages.pageInfo.hasNextPage && (
+          <button onClick={() => this.loadMore()}>Load more...</button>
+        )}
       </div>
-    )
+    );
   }
 }
 
 const queryOptions = {
-  options: props => ({
+  options: (props) => ({
     variables: {
       search: queryString.parse(props.location.search).search,
       endCursor: null,
     },
   }),
-}
+};
 
-ListView = graphql(query, queryOptions)(ListView)
-export default ListView
+ListView = graphql(query, queryOptions)(ListView);
+export default ListView;
 ```
 
 > At this point you should be able to click the `Load more...` button and new items should appear, when there are no more items, the button should disappear. When you click in and out of items from the list, observe the incoming request in the terminal: You will see that loading the same object several times in a row does not trigger new requests, because the data is already in the cache.
